@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PadmaSaras | Student</title>
+
+<style>
+body{
+    margin:0;font-family:"Segoe UI",sans-serif;
+    background:linear-gradient(135deg,#fff3e0,#e3f2fd);
+}
+header{
+    background:linear-gradient(90deg,#ff9933,#ffffff,#138808);
+    padding:18px;text-align:center;border-bottom:4px solid #1a237e;
+}
+header h1{margin:0;color:#1a237e}
+.card{
+    max-width:900px;margin:25px auto;background:white;padding:25px;
+    border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.12)
+}
+h2{color:#1a237e;border-left:6px solid #ff9933;padding-left:12px}
+input,select{width:100%;padding:12px;margin-top:8px;border-radius:8px;border:1px solid #ccc}
+button{
+    margin-top:12px;padding:12px 22px;
+    background:linear-gradient(90deg,#1a237e,#3949ab);
+    color:white;border:none;border-radius:8px;font-size:15px
+}
+ul{margin-top:15px}
+a{text-decoration:none;color:#1a237e;font-weight:600}
+#out{margin-top:15px;padding:15px;background:#f1f8ff;border-left:6px solid #138808}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #ccc;padding:10px;text-align:center}
+th{background:#f5f5f5}
+footer{text-align:center;margin:30px 0;color:#666}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🪷 PadmaSaras</h1>
+<p>Language · Culture · Confidence</p>
+</header>
+
+<div class="card">
+<h2>🎒 My Question Papers</h2>
+<button onclick="loadPDFs()">📚 Load PDFs</button>
+<ul id="list"></ul>
+</div>
+
+<div class="card">
+<h2>🗣️ Translation & Vocabulary</h2>
+
+<input id="text" placeholder="Example: I love learning">
+<select id="lang">
+<option value="telugu">తెలుగు</option>
+<option value="hindi">हिन्दी</option>
+</select>
+
+<button onclick="translate()">✨ Translate</button>
+<div id="out"></div>
+</div>
+
+<div class="card">
+<h2>📊 My Results</h2>
+<button onclick="loadResults()">Load Results</button>
+
+<table>
+<thead>
+<tr><th>PDF</th><th>Marks</th><th>Feedback</th></tr>
+</thead>
+<tbody id="res"></tbody>
+</table>
+</div>
+
+<footer>
+🌸 Learn with Joy · Designed for Young Indian Learners 🌸
+</footer>
+
+<script>
+const sid = localStorage.getItem("uid");
+
+/* LOAD PDFs */
+function loadPDFs(){
+fetch(`http://127.0.0.1:5000/student_pdfs/${sid}`)
+.then(r=>r.json())
+.then(d=>{
+    if(d.length===0){
+        list.innerHTML="<li>No PDFs assigned yet</li>";
+        return;
+    }
+    list.innerHTML=d.map(p=>`
+        <li>📘 <a href="http://127.0.0.1:5000/pdf/${p.filename}" target="_blank">
+            ${p.filename}
+        </a></li>
+    `).join("");
+});
+}
+
+/* TRANSLATE */
+function translate(){
+fetch("http://127.0.0.1:5000/translate",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({text:text.value,language:lang.value})
+})
+.then(r=>r.json())
+.then(d=>{
+    let exp="";
+    if(d.explanation){
+        exp="<br><b>Word meanings:</b><br>";
+        for(let k in d.explanation){
+            exp+=`🔹 ${k} → ${d.explanation[k]}<br>`;
+        }
+    }
+    out.innerHTML=`<b>Translation:</b><br>${d.translated}${exp}`;
+});
+}
+
+/* RESULTS */
+function loadResults(){
+fetch(`http://127.0.0.1:5000/student_results/${sid}`)
+.then(r=>r.json())
+.then(d=>{
+    if(d.length===0){
+        res.innerHTML="<tr><td colspan='3'>No results yet</td></tr>";
+        return;
+    }
+    res.innerHTML=d.map(r=>`
+        <tr>
+        <td>${r.filename}</td>
+        <td>${r.marks ?? "Pending"}</td>
+        <td>${r.feedback ?? "-"}</td>
+        </tr>
+    `).join("");
+});
+}
+</script>
+<div class="card" style="text-align:center">
+    <h2>🎥 Live Class (Google Meet)</h2>
+
+    <a href="https://meet.google.com/bsp-gqou-gtz" target="_blank">
+        <button style="
+            background:#0f9d58;
+            color:white;
+            padding:12px 18px;
+            font-size:16px;
+            border-radius:8px;
+        ">
+            Join Online Class
+        </button>
+    </a>
+
+    <p style="margin-top:8px;color:#555">
+        Click to attend live Telugu / Hindi class
+    </p>
+</div>
+
+</body>
+</html>

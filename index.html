@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PadmaSaras | Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Poppins',sans-serif;height:100vh;display:flex}
+
+/* LEFT IMAGE */
+.image-side{
+    width:60%;
+    background:url("https://i.pinimg.com/736x/0e/fe/6f/0efe6fa562b1e5dbe3f2641daeed3bc2.jpg")
+    no-repeat center top;
+    background-size:cover;
+    position:relative;
+}
+.image-side::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(rgba(255,255,255,.15),rgba(255,255,255,.25));
+}
+
+/* RIGHT LOGIN */
+.login-side{
+    width:40%;
+    background:linear-gradient(135deg,#fff8f0,#f4f8ff);
+    display:flex;
+    flex-direction:column;
+}
+
+.top-bar{
+    background:linear-gradient(90deg,#ff9933,#ffffff,#138808);
+    padding:14px;
+    text-align:center;
+}
+.card{
+    width:360px;
+    background:white;
+    padding:30px;
+    border-radius:18px;
+    box-shadow:0 18px 40px rgba(0,0,0,.25);
+    border-top:6px solid #ff9933;
+}
+.login-container{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.logo{text-align:center;font-size:28px;font-weight:600;color:#1a237e}
+.logo span{color:#ff9933}
+.subtitle{text-align:center;font-size:14px;color:#555;margin-bottom:20px}
+input{width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #ccc}
+button{width:100%;padding:12px;background:linear-gradient(90deg,#ff9933,#138808);
+color:white;border:none;border-radius:30px;font-size:16px;cursor:pointer}
+#msg{text-align:center;margin-top:15px;color:red}
+</style>
+</head>
+
+<body>
+
+<div class="image-side"></div>
+
+<div class="login-side">
+
+<div class="top-bar">
+<h1>🪷 PadmaSaras – Language Learning Portal</h1>
+<p><b>B. Padmavathi Mohan</b> | M.A, B.Ed</p>
+<p>📧 teacher@padmasaras.com | 🌸 Telugu · Hindi</p>
+</div>
+
+<div class="login-container">
+<div class="card">
+<div class="logo">Padma<span>Saras</span></div>
+<div class="subtitle">Language · Culture · Confidence<br>తెలుగు | हिन्दी</div>
+
+<input type="email" id="email" value="teacher@padmasaras.com">
+<input type="password" id="password" value="teacher123">
+
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+</div>
+</div>
+
+<script>
+function login(){
+fetch("http://127.0.0.1:5000/login",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+        email:email.value,
+        password:password.value
+    })
+})
+.then(r=>r.json())
+.then(d=>{
+    if(d.role){
+        // ✅ STORE USER ID & ROLE
+        localStorage.setItem("uid", d.id);
+        localStorage.setItem("role", d.role);
+
+        if(d.role==="teacher") location.href="teacher.html";
+        else location.href="student.html";
+    }else{
+        msg.innerText=d.message;
+    }
+})
+.catch(()=>msg.innerText="Backend not running");
+}
+</script>
+
+</body>
+</html>

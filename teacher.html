@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PadmaSaras | Teacher Portal</title>
+
+<style>
+body{
+    margin:0;font-family:"Segoe UI";
+    background:linear-gradient(120deg,#fff8e1,#e8f5e9)
+}
+header{
+    background:linear-gradient(90deg,#ff9933,#fff,#138808);
+    padding:20px;text-align:center;
+    border-bottom:4px solid #1a237e
+}
+.card{
+    background:white;
+    max-width:1100px;
+    margin:25px auto;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 10px 22px rgba(0,0,0,.1)
+}
+h2{
+    color:#1a237e;
+    border-left:5px solid #ff9933;
+    padding-left:10px
+}
+input,select{
+    width:100%;
+    padding:10px;
+    margin-top:8px
+}
+button{
+    margin-top:10px;
+    padding:10px;
+    background:#1a237e;
+    color:white;
+    border:none;
+    cursor:pointer
+}
+.pdf-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 0;
+    border-bottom:1px dashed #ccc
+}
+.del-btn{
+    background:#c62828;
+    padding:6px 10px;
+    font-size:13px
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🪷 PadmaSaras – Teacher Portal</h1>
+<p>B. Padmavathi Mohan | M.A, B.Ed</p>
+</header>
+
+<!-- UPLOAD PDF -->
+<div class="card">
+<h2>Upload PDF</h2>
+<input type="file" id="pdfFile">
+<button onclick="uploadPDF()">Upload</button>
+</div>
+
+<!-- VIEW & DELETE PDFs -->
+<div class="card">
+<h2>Uploaded PDFs</h2>
+<div id="pdfList"></div>
+</div>
+
+<!-- ASSIGN PDF -->
+<div class="card">
+<h2>Assign PDF</h2>
+<select id="studentSelect"></select>
+<select id="pdfSelect"></select>
+<button onclick="assignPDF()">Assign</button>
+</div>
+
+<!-- ADD VOCAB -->
+<div class="card">
+<h2>Add Vocabulary</h2>
+<input id="english" placeholder="English">
+<input id="telugu" placeholder="Telugu">
+<input id="hindi" placeholder="Hindi">
+<button onclick="addWord()">Add</button>
+</div>
+
+<!-- SUBMISSIONS -->
+<div class="card">
+<h2>Submissions & Marks</h2>
+<button onclick="loadSubs()">Load</button>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>ID</th>
+<th>Student</th>
+<th>PDF</th>
+<th>Marks</th>
+<th>Feedback</th>
+</tr>
+</thead>
+<tbody id="subs"></tbody>
+</table>
+</div>
+
+<script>
+const TEACHER_ID = 1;
+
+/* LOAD STUDENTS */
+fetch("http://127.0.0.1:5000/students")
+.then(r=>r.json())
+.then(d=>{
+    studentSelect.innerHTML =
+      d.map(s=>`<option value="${s.id}">${s.name}</option>`).join("")
+});
+
+/* LOAD PDFs (dropdown + delete list) */
+function loadPDFs(){
+fetch("http://127.0.0.1:5000/list_pdfs")
+.then(r=>r.json())
+.then(d=>{
+    /* dropdown */
+    pdfSelect.innerHTML =
+      d.map(p=>`<option value="${p.id}">${p.filename}</option>`).join("");
+
+    /* delete list */
+    pdfList.innerHTML = d.map(p=>`
+        <div class="pdf-row">
+            <span>📄 ${p.filename}</span>
+            <button class="del-btn" onclick="deletePDF(${p.id})">❌ Delete</button>
+        </div>
+    `).join("");
+});
+}
+loadPDFs();
+
+/* UPLOAD */
+function uploadPDF(){
+let fd=new FormData();
+fd.append("pdf",pdfFile.files[0]);
+fd.append("teacher_id",TEACHER_ID);
+
+fetch("http://127.0.0.1:5000/upload_pdf",{
+    method:"POST",
+    body:fd
+})
+.then(()=>loadPDFs());
+}
+
+/* DELETE */
+function deletePDF(id){
+if(!confirm("Delete this PDF?")) return;
+
+fetch(`http://127.0.0.1:5000/delete_pdf/${id}`,{
+    method:"DELETE"
+})
+.then(r=>r.json())
+.then(()=>loadPDFs());
+}
+
+/* ASSIGN */
+function assignPDF(){
+fetch("http://127.0.0.1:5000/assign_pdf",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+    student_id:studentSelect.value,
+    pdf_id:pdfSelect.value
+})
+});
+}
+
+/* ADD WORD */
+function addWord(){
+fetch("http://127.0.0.1:5000/add_word",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+    english:english.value,
+    telugu:telugu.value,
+    hindi:hindi.value
+})
+});
+}
+
+/* SUBMISSIONS */
+function loadSubs(){
+fetch("http://127.0.0.1:5000/submissions")
+.then(r=>r.json())
+.then(d=>{
+subs.innerHTML=d.map(s=>`
+<tr>
+<td>${s.id}</td>
+<td>${s.student_name}</td>
+<td>${s.filename}</td>
+<td>${s.marks ?? "-"}</td>
+<td>${s.feedback ?? "-"}</td>
+</tr>
+`).join("");
+});
+}
+</script>
+<div class="card" style="text-align:center">
+    <h2>🎥 Live Class (Google Meet)</h2>
+    <a href="https://meet.google.com/bsp-gqou-gtz" target="_blank">
+        <button style="
+            background:#0f9d58;
+            color:white;
+            padding:12px 18px;
+            font-size:16px;
+            border-radius:8px;
+        ">
+            Join Live Class
+        </button>
+    </a>
+    <p style="margin-top:8px;color:#555">
+        Use this link for online teaching sessions
+    </p>
+</div>
+
+</body>
+</html>
