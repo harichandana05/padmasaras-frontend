@@ -82,7 +82,7 @@ const sid = localStorage.getItem("uid");
 
 /* LOAD PDFs */
 function loadPDFs(){
-fetch(`http://127.0.0.1:5000/student_pdfs/${sid}`)
+fetch(`https://padmasaras-backend.onrender.com/student_pdfs/${sid}`)
 .then(r=>r.json())
 .then(d=>{
     if(d.length===0){
@@ -90,16 +90,18 @@ fetch(`http://127.0.0.1:5000/student_pdfs/${sid}`)
         return;
     }
     list.innerHTML=d.map(p=>`
-        <li>📘 <a href="http://127.0.0.1:5000/pdf/${p.filename}" target="_blank">
-            ${p.filename}
-        </a></li>
+        <li>📘 
+            <a href="https://padmasaras-backend.onrender.com/pdf/${p.filename}" target="_blank">
+                ${p.filename}
+            </a>
+        </li>
     `).join("");
 });
 }
 
 /* TRANSLATE */
 function translate(){
-fetch("http://127.0.0.1:5000/translate",{
+fetch("https://padmasaras-backend.onrender.com/translate",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({text:text.value,language:lang.value})
@@ -119,7 +121,7 @@ body:JSON.stringify({text:text.value,language:lang.value})
 
 /* RESULTS */
 function loadResults(){
-fetch(`http://127.0.0.1:5000/student_results/${sid}`)
+fetch(`https://padmasaras-backend.onrender.com/student_results/${sid}`)
 .then(r=>r.json())
 .then(d=>{
     if(d.length===0){
@@ -136,6 +138,7 @@ fetch(`http://127.0.0.1:5000/student_results/${sid}`)
 });
 }
 </script>
+
 <div class="card" style="text-align:center">
     <h2>🎥 Live Class (Google Meet)</h2>
 

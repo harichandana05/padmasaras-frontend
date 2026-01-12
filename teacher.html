@@ -114,7 +114,7 @@ button{
 const TEACHER_ID = 1;
 
 /* LOAD STUDENTS */
-fetch("http://127.0.0.1:5000/students")
+fetch("https://padmasaras-backend.onrender.com/students")
 .then(r=>r.json())
 .then(d=>{
     studentSelect.innerHTML =
@@ -123,7 +123,7 @@ fetch("http://127.0.0.1:5000/students")
 
 /* LOAD PDFs (dropdown + delete list) */
 function loadPDFs(){
-fetch("http://127.0.0.1:5000/list_pdfs")
+fetch("https://padmasaras-backend.onrender.com/list_pdfs")
 .then(r=>r.json())
 .then(d=>{
     /* dropdown */
@@ -147,7 +147,7 @@ let fd=new FormData();
 fd.append("pdf",pdfFile.files[0]);
 fd.append("teacher_id",TEACHER_ID);
 
-fetch("http://127.0.0.1:5000/upload_pdf",{
+fetch("https://padmasaras-backend.onrender.com/upload_pdf",{
     method:"POST",
     body:fd
 })
@@ -158,7 +158,7 @@ fetch("http://127.0.0.1:5000/upload_pdf",{
 function deletePDF(id){
 if(!confirm("Delete this PDF?")) return;
 
-fetch(`http://127.0.0.1:5000/delete_pdf/${id}`,{
+fetch(`https://padmasaras-backend.onrender.com/delete_pdf/${id}`,{
     method:"DELETE"
 })
 .then(r=>r.json())
@@ -167,7 +167,7 @@ fetch(`http://127.0.0.1:5000/delete_pdf/${id}`,{
 
 /* ASSIGN */
 function assignPDF(){
-fetch("http://127.0.0.1:5000/assign_pdf",{
+fetch("https://padmasaras-backend.onrender.com/assign_pdf",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
@@ -179,7 +179,7 @@ body:JSON.stringify({
 
 /* ADD WORD */
 function addWord(){
-fetch("http://127.0.0.1:5000/add_word",{
+fetch("https://padmasaras-backend.onrender.com/add_word",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
@@ -192,7 +192,7 @@ body:JSON.stringify({
 
 /* SUBMISSIONS */
 function loadSubs(){
-fetch("http://127.0.0.1:5000/submissions")
+fetch("https://padmasaras-backend.onrender.com/submissions")
 .then(r=>r.json())
 .then(d=>{
 subs.innerHTML=d.map(s=>`
@@ -207,6 +207,7 @@ subs.innerHTML=d.map(s=>`
 });
 }
 </script>
+
 <div class="card" style="text-align:center">
     <h2>🎥 Live Class (Google Meet)</h2>
     <a href="https://meet.google.com/bsp-gqou-gtz" target="_blank">

@@ -90,7 +90,7 @@ color:white;border:none;border-radius:30px;font-size:16px;cursor:pointer}
 
 <script>
 function login(){
-fetch("http://127.0.0.1:5000/login",{
+fetch("https://padmasaras-backend.onrender.com/login",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
@@ -101,7 +101,6 @@ fetch("http://127.0.0.1:5000/login",{
 .then(r=>r.json())
 .then(d=>{
     if(d.role){
-        // ✅ STORE USER ID & ROLE
         localStorage.setItem("uid", d.id);
         localStorage.setItem("role", d.role);
 
@@ -111,7 +110,7 @@ fetch("http://127.0.0.1:5000/login",{
         msg.innerText=d.message;
     }
 })
-.catch(()=>msg.innerText="Backend not running");
+.catch(()=>msg.innerText="Backend not reachable");
 }
 </script>
 
